@@ -12,7 +12,7 @@
         android:text="TEST!!!"
         android:background="@drawable/custombutton"
         android:padding="8dp"
-        android:onClick="test"
+        android:onClick="Klik"
         android:textColor="@color/putih"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
