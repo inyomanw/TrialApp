@@ -35,13 +35,12 @@ public class TestActivity extends AppCompatActivity {
     private Subscription subscription;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private ProgressBar progressBar;
-    private Button btnAdd;
     private String a = "a", b="b",no="23423";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_test);
+        setContentView(R.layout.test);
 
         progressBar = findViewById(R.id.progressBar);
         mapiInterface = ApiClientTest.getClient().create(ApiInterface.class);
@@ -49,13 +48,6 @@ public class TestActivity extends AppCompatActivity {
         recyclerViewPost = findViewById(R.id.rv_posts);
         recyclerViewPost.setHasFixedSize(true);
         recyclerViewPost.setLayoutManager(new LinearLayoutManager(this));
-        btnAdd = findViewById(R.id.btn_add);
-        btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addData();
-            }
-        });
         loadData();
     }
     private void fetchData() {
