@@ -16,7 +16,7 @@ public interface ApiInterface {
     Observable<List<Post>> getPosts();
 
     @FormUrlEncoded
-    @POST("alamat")
+    @POST("Alamat")
     Observable<loginmodel> addAlamat(@Field("idpengguna") String idpengguna,
                                      @Field("namapenerima") String namapenerima,
                                      @Field("alamat") String alamat,

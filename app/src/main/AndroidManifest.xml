@@ -20,7 +20,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".feature.Test.TestActivity"></activity>
+        <activity android:name=".feature.Test.TestActivity"
+            android:theme="@style/AppTheme.SimpleCoordinatorTheme"></activity>
     </application>
 
 </manifest>
