@@ -10,7 +10,7 @@
     tools:context=".feature.Test.TestActivity">
 
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/main.appbar"
+        android:id="@+id/main_appbar"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
@@ -45,11 +45,12 @@
                 android:layout_marginTop="16dp"/>
 
             <android.support.v7.widget.Toolbar
-                android:id="@+id/main.toolbar"
+                android:id="@+id/main_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 app:layout_collapseMode="pin"
+                app:theme="@style/AppTheme.Toolbar"
                 />
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
@@ -68,7 +69,7 @@
         android:layout_width="wrap_content"
         android:layout_margin="16dp"
         android:src="@drawable/ic_comment_24dp"
-        app:layout_anchor="@id/main.appbar"
+        app:layout_anchor="@id/main_appbar"
         app:layout_anchorGravity="bottom|right|end"
         />
     <Button
