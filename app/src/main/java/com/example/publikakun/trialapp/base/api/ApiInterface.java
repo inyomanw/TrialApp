@@ -3,10 +3,12 @@ package com.example.publikakun.trialapp.base.api;
 import com.example.publikakun.trialapp.model.Post;
 import com.example.publikakun.trialapp.model.loginmodel;
 
+import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.Observable;
 import retrofit2.http.Field;
+import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
@@ -26,4 +28,10 @@ public interface ApiInterface {
                                      @Field("kodepos") String kodepos,
                                      @Field("keterangan") String keterangan,
                                      @Field("nohp") String nohp);
+    @FormUrlEncoded
+    @POST("Alamat")
+    Observable<loginmodel> addAlamatHash(@FieldMap HashMap<String,String> hashMap);
+
+    @GET("emails")
+    Observable<List<String>> getEmails();
 }

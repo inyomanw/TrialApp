@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.example.publikakun.trialapp.R;
 import com.example.publikakun.trialapp.model.Post;
 
+import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.disposables.CompositeDisposable;
@@ -30,8 +31,9 @@ public class TestActivity extends AppCompatActivity implements TestView ,
     private Button btnAdd;
     private String a = "a", b = "b", no = "432123";
     private TestPresenter presenter;
+    
     private Toolbar toolbar;
-
+    private HashMap<String, String> hashMap;
     private View mFab;
     private int mMaxScrollSize;
     private boolean mIsImageHidden;
@@ -60,8 +62,19 @@ public class TestActivity extends AppCompatActivity implements TestView ,
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hashMap = new HashMap<String, String>();
                 progressBar.setVisibility(View.VISIBLE);
-                presenter.addAlamat(a, b, no);
+                hashMap.put("idpengguna","user2");
+                hashMap.put("namapenerima",a);
+                hashMap.put("alamat",a);
+                hashMap.put("kecamatan",a);
+                hashMap.put("kabupaten",b);
+                hashMap.put("provinsi",no);
+                hashMap.put("kodepos",no);
+                hashMap.put("keterangan",a);
+                hashMap.put("nohp",no);
+                presenter.addAlamatHash(hashMap);
+//                presenter.addAlamat(a, b, no);
             }
         });
 

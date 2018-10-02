@@ -6,6 +6,7 @@ import com.example.publikakun.trialapp.base.api.ApiInterface;
 import com.example.publikakun.trialapp.model.Post;
 import com.example.publikakun.trialapp.model.loginmodel;
 
+import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -99,6 +100,28 @@ public class TestPresenter {
                         } catch (Exception e) {
                             view.onError(e.getLocalizedMessage());
                         }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        view.onError(e.getLocalizedMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        view.onProgresBarSuccess();
+                    }
+                });
+    }
+    public void addAlamatHash(HashMap<String,String> hashMap)
+    {
+        ApiClientOther.getClient().create(ApiInterface.class).addAlamatHash(hashMap)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableObserver<loginmodel>() {
+                    @Override
+                    public void onNext(loginmodel loginmodel) {
+                        view.onSuccessAddData();
                     }
 
                     @Override
