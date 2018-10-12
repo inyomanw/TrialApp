@@ -1,5 +1,6 @@
 package com.example.publikakun.trialapp.base.api;
 
+import com.example.publikakun.trialapp.model.Alamat;
 import com.example.publikakun.trialapp.model.Post;
 import com.example.publikakun.trialapp.model.loginmodel;
 
@@ -7,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.Observable;
+import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
@@ -31,6 +33,10 @@ public interface ApiInterface {
     @FormUrlEncoded
     @POST("Alamat")
     Observable<loginmodel> addAlamatHash(@FieldMap HashMap<String,String> hashMap);
+
+    @FormUrlEncoded
+    @POST("Alamat")
+    Observable<loginmodel> addAlamatWithModel(@Body Alamat alamat);
 
     @GET("emails")
     Observable<List<String>> getEmails();

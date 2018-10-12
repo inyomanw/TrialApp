@@ -3,14 +3,17 @@ package com.example.publikakun.trialapp.feature.Test;
 import com.example.publikakun.trialapp.base.api.ApiClientOther;
 import com.example.publikakun.trialapp.base.api.ApiClientTest;
 import com.example.publikakun.trialapp.base.api.ApiInterface;
+import com.example.publikakun.trialapp.model.Alamat;
 import com.example.publikakun.trialapp.model.Post;
 import com.example.publikakun.trialapp.model.loginmodel;
 
 import java.util.HashMap;
 import java.util.List;
 
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -119,6 +122,33 @@ public class TestPresenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new DisposableObserver<loginmodel>() {
+                    @Override
+                    public void onNext(loginmodel loginmodel) {
+                        view.onSuccessAddData();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        view.onError(e.getLocalizedMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        view.onProgresBarSuccess();
+                    }
+                });
+    }
+    public void addAlamatWithModel(Alamat alamat)
+    {
+        ApiClientOther.getClient().create(ApiInterface.class).addAlamatWithModel(alamat)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<loginmodel>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
                     @Override
                     public void onNext(loginmodel loginmodel) {
                         view.onSuccessAddData();

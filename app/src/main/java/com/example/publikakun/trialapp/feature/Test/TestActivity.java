@@ -15,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.publikakun.trialapp.R;
+import com.example.publikakun.trialapp.model.Alamat;
 import com.example.publikakun.trialapp.model.Post;
 
 import java.util.HashMap;
@@ -74,6 +75,19 @@ public class TestActivity extends AppCompatActivity implements TestView ,
                 hashMap.put("keterangan",a);
                 hashMap.put("nohp",no);
                 presenter.addAlamatHash(hashMap);
+
+//                Alamat alamat = new Alamat();
+//                alamat.setIdpengguna("user2");
+//                alamat.setNamapenerima(a);
+//                alamat.setAlamat(a);
+//                alamat.setKecamatan(a);
+//                alamat.setKabupaten(b);
+//                alamat.setProvinsi(b);
+//                alamat.setKodepos(no);
+//                alamat.setKeterangan(b);
+//                alamat.setNohp(no);
+//                presenter.addAlamatWithModel(alamat);
+
 //                presenter.addAlamat(a, b, no);
             }
         });
