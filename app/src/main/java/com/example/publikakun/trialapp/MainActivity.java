@@ -3,27 +3,40 @@ package com.example.publikakun.trialapp;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.publikakun.trialapp.base.api.ApiClientOther;
+import com.example.publikakun.trialapp.base.api.ApiInterface;
 import com.example.publikakun.trialapp.feature.Test.TestActivity;
+import com.example.publikakun.trialapp.model.ResponsePengguna;
+import com.example.publikakun.trialapp.utils.Formats;
 import com.jakewharton.rxbinding2.widget.RxTextView;
-import com.example.publikakun.trialapp.R;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
-
-    private EditText etTest,edtPassword,edtConfirmPass;
-    private TextView alertPassword,alertConfirmPass;
+    private final static String TAG = MainActivity.class.getSimpleName();
+    private EditText etTest,edtPassword,edtConfirmPass,edtEmail;
+    private TextView alertPassword,alertConfirmPass,textEmailAlert;
+    private ApiInterface apiInterface;
+    private List<String> listEmail = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,36 +73,12 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
-        RxTextView.textChanges(edtPassword)
-                .filter(new Predicate<CharSequence>() {
-                    @Override
-                    public boolean test(CharSequence charSequence) throws Exception {
-                        return charSequence.length()==6;
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<CharSequence>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
+        getListEmail();
 
-                    }
+        rxPassword();
+        rxConfirmPassword();
+        rxEmail();
 
-                    @Override
-                    public void onNext(CharSequence charSequence) {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        alertPassword.setVisibility(View.VISIBLE);
-                        alertPassword.setText("Password harus mengandung 3 huruf dan 3 angka");
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
     }
     private void initLayout()
     {
@@ -98,6 +87,199 @@ public class MainActivity extends AppCompatActivity {
         edtConfirmPass=findViewById(R.id.edt_confirm_password);
         alertPassword=findViewById(R.id.alert_password);
         alertConfirmPass=findViewById(R.id.alert_confirm_pass);
+        textEmailAlert = findViewById(R.id.text_email_alert);
+        apiInterface = ApiClientOther.getClient().create(ApiInterface.class);
+    }
+    private void getListEmail()
+    {
+        apiInterface.getPengguna().subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<ResponsePengguna>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(ResponsePengguna responsePengguna) {
+                        Log.d(TAG, "logv onNext: "+String.valueOf(responsePengguna.getPengguna().getData().size()));
+                        for(int i=0;i<responsePengguna.getPengguna().getData().size();i++)
+                        {
+                            listEmail.add(responsePengguna.getPengguna().getData().get(i).getEmail().toString());
+                            Log.d(TAG, "logv for onNext: "+responsePengguna.getPengguna().getData().get(i).getEmail());
+                        }
+                        Log.d(TAG, "LOGV onNext: "+listEmail.toString());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+    }
+    private  void rxPassword(){
+        Observable<Boolean> passwordStream = RxTextView.textChanges(edtPassword)
+                .map(new Function<CharSequence, Boolean>() {
+                    @Override
+                    public Boolean apply(CharSequence charSequence) throws Exception {
+                        return !TextUtils.isEmpty(charSequence)
+//                                && charSequence.toString().trim().length() < 6
+                                && !Formats.password(charSequence.toString());
+                    }
+                });
+        Consumer<Boolean> passwordConsumer = new Consumer<Boolean>() {
+            @Override
+            public void accept(Boolean aBoolean) throws Exception {
+
+            }
+        };
+        Observer<Boolean> passwordObserver = new Observer<Boolean>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(Boolean aBoolean) {
+                Log.d("passwordObserver",String.valueOf(aBoolean.booleanValue()));
+                showPasswordMinimalAlert(aBoolean.booleanValue());
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.d("rx",e.getMessage());
+            }
+
+            @Override
+            public void onComplete() {
+                Log.d("rx","Password stream completed");
+            }
+        };
+        passwordStream.subscribe(passwordConsumer);
+    }
+    private void rxConfirmPassword(){
+        Observable<Boolean> confirmPasswordStream = Observable.merge(
+                (ObservableSource<? extends Boolean>) RxTextView.textChanges(edtPassword)
+                        .map(new Function<CharSequence,Boolean>() {
+                            @Override
+                            public Boolean apply(CharSequence charSequence) throws Exception {
+                                return !charSequence.toString().trim().equalsIgnoreCase(edtConfirmPass.getText().toString());
+                            }
+                        }),
+                RxTextView.textChanges(edtConfirmPass)
+                        .map(new Function<CharSequence, Boolean>() {
+                            @Override
+                            public Boolean apply(CharSequence charSequence) throws Exception {
+                                return !charSequence.toString().trim().equalsIgnoreCase(edtPassword.getText().toString());
+                            }
+                        })
+        );
+        Observer<Boolean> confirmPasswordObserver = new Observer<Boolean>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(Boolean aBoolean) {
+                Log.d("passwordConfirmation",String.valueOf(aBoolean.booleanValue()));
+                showPasswordConfirmationAlert(aBoolean.booleanValue());
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.d("rx",e.getMessage());
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        };
+        confirmPasswordStream.subscribe(confirmPasswordObserver);
+    }
+    private void rxEmail(){
+        Observable<Boolean> emailStream = RxTextView.textChanges(edtEmail)
+                .map(new Function<CharSequence, String>() {
+                    @Override
+                    public String apply(CharSequence charSequence) throws Exception {
+                        return charSequence.toString();
+                    }
+                })
+                .filter(new Predicate<String>() {
+                    @Override
+                    public boolean test(String s) throws Exception {
+                        return s.length()>6;
+                    }
+                })
+                .debounce(100,TimeUnit.MILLISECONDS)
+                .flatMap(new Function<String, Boolean>() {
+                    @Override
+                    public Boolean apply(String s) throws Exception {
+                        return checkIfEmailExistFromAPI(s);
+                    }
+                });
+
+        Observer<Boolean> emailObserver = new Observer<Boolean>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(Boolean emailExist) {
+                Log.d("emailObserver",String.valueOf(emailExist.booleanValue()));
+                showEmailExistAlert(emailExist.booleanValue());
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.d("rx",e.getMessage());
+            }
+
+            @Override
+            public void onComplete() {
+                Log.d("rx","Email stream completed");
+            }
+        };
+        emailStream.subscribe(emailObserver);
+
+    }
+    public boolean checkIfEmailExistFromAPI(final String input){
+        return listEmail.contains(input);
+    }
+    public void showPasswordMinimalAlert(boolean value){
+        if(value) {
+            alertPassword.setText("Password harus memiliki 3 huruf dan 3 angka");
+            alertPassword.setVisibility(View.VISIBLE);
+//            btnRegister.setEnabled(false);
+        } else {
+            alertPassword.setVisibility(View.GONE);
+//            btnRegister.setEnabled(true);
+        }
+    }
+
+    public void showPasswordConfirmationAlert(boolean value){
+        if(value){
+            alertConfirmPass.setText("Password yang di inputkan tidak sesuai");
+            alertConfirmPass.setVisibility(View.VISIBLE);
+        } else {
+            alertConfirmPass.setVisibility(View.GONE);
+        }
+    }
+    public void showEmailExistAlert(boolean value){
+        if(value) {
+            textEmailAlert.setText(getString(R.string.email_exist_alert));
+            textEmailAlert.setVisibility(View.VISIBLE);
+        } else {
+            textEmailAlert.setVisibility(View.GONE);
+        }
     }
 
     public void test(View view)

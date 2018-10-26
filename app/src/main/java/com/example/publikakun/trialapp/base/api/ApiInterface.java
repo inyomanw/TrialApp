@@ -2,10 +2,13 @@ package com.example.publikakun.trialapp.base.api;
 
 import com.example.publikakun.trialapp.model.Alamat;
 import com.example.publikakun.trialapp.model.Post;
+import com.example.publikakun.trialapp.model.ResponsePengguna;
 import com.example.publikakun.trialapp.model.loginmodel;
+import com.jakewharton.rxbinding2.internal.GenericTypeNullable;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Observer;
 
 import io.reactivex.Observable;
 import retrofit2.http.Body;
@@ -38,6 +41,6 @@ public interface ApiInterface {
     @POST("Alamat")
     Observable<loginmodel> addAlamatWithModel(@Body Alamat alamat);
 
-    @GET("emails")
-    Observable<List<String>> getEmails();
+    @GET("Pengguna")
+    Observable<ResponsePengguna> getPengguna();
 }
