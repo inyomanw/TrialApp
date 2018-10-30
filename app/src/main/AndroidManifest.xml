@@ -14,16 +14,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
+
+        </activity>
+        <activity
+            android:name=".feature.Test.TestActivity"
+            android:theme="@style/AppTheme.SimpleCoordinatorTheme" />
+        <activity android:name=".feature.Test.registration.RegistrationDemoActivity"></activity>
+        <activity android:name=".RegistrationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".feature.Test.TestActivity"
-            android:theme="@style/AppTheme.SimpleCoordinatorTheme" />
-        <activity android:name=".feature.Test.registration.RegistrationDemoActivity"></activity>
     </application>
 
 </manifest>

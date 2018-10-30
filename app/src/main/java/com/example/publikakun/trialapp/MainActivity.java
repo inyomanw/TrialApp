@@ -33,8 +33,8 @@ import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
     private final static String TAG = MainActivity.class.getSimpleName();
-    private EditText etTest,edtPassword,edtConfirmPass,edtEmail;
-    private TextView alertPassword,alertConfirmPass,textEmailAlert;
+    private EditText etTest, edtPassword, edtConfirmPass, edtEmail;
+    private TextView alertPassword, alertConfirmPass, textEmailAlert;
     private ApiInterface apiInterface;
     private List<String> listEmail = new ArrayList<String>();
 
@@ -44,12 +44,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initLayout();
         RxTextView.textChanges(etTest)
-                .debounce(2,TimeUnit.SECONDS)
+                .debounce(2, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .filter(new Predicate<CharSequence>() {
                     @Override
                     public boolean test(CharSequence charSequence) throws Exception {
-                        return charSequence.length()>5;
+                        return charSequence.length() > 5;
                     }
                 })
                 .subscribe(new Observer<CharSequence>() {
@@ -78,20 +78,20 @@ public class MainActivity extends AppCompatActivity {
         rxPassword();
         rxConfirmPassword();
         rxEmail();
+    }
 
-    }
-    private void initLayout()
-    {
-        etTest=findViewById(R.id.et_test);
-        edtPassword=findViewById(R.id.edt_password);
-        edtConfirmPass=findViewById(R.id.edt_confirm_password);
-        alertPassword=findViewById(R.id.alert_password);
-        alertConfirmPass=findViewById(R.id.alert_confirm_pass);
-        textEmailAlert = findViewById(R.id.text_email_alert);
+    private void initLayout() {
+        etTest = findViewById(R.id.et_test);
+        edtPassword = findViewById(R.id.edt_password);
+        edtConfirmPass = findViewById(R.id.edt_confirm_password);
+        alertPassword = findViewById(R.id.alert_password);
+        alertConfirmPass = findViewById(R.id.alert_confirm_pass);
+        textEmailAlert = findViewById(R.id.alert_email);
         apiInterface = ApiClientOther.getClient().create(ApiInterface.class);
+        edtEmail = findViewById(R.id.edt_email);
     }
-    private void getListEmail()
-    {
+
+    private void getListEmail() {
         apiInterface.getPengguna().subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<ResponsePengguna>() {
@@ -102,13 +102,12 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onNext(ResponsePengguna responsePengguna) {
-                        Log.d(TAG, "logv onNext: "+String.valueOf(responsePengguna.getPengguna().getData().size()));
-                        for(int i=0;i<responsePengguna.getPengguna().getData().size();i++)
-                        {
+                        Log.d(TAG, "logv onNext: " + String.valueOf(responsePengguna.getPengguna().getData().size()));
+                        for (int i = 0; i < responsePengguna.getPengguna().getData().size(); i++) {
                             listEmail.add(responsePengguna.getPengguna().getData().get(i).getEmail().toString());
-                            Log.d(TAG, "logv for onNext: "+responsePengguna.getPengguna().getData().get(i).getEmail());
+                            Log.d(TAG, "logv for onNext: " + responsePengguna.getPengguna().getData().get(i).getEmail());
                         }
-                        Log.d(TAG, "LOGV onNext: "+listEmail.toString());
+                        Log.d(TAG, "LOGV onNext: " + listEmail.toString());
                     }
 
                     @Override
@@ -123,7 +122,8 @@ public class MainActivity extends AppCompatActivity {
                 });
 
     }
-    private  void rxPassword(){
+
+    private void rxPassword() {
         Observable<Boolean> passwordStream = RxTextView.textChanges(edtPassword)
                 .map(new Function<CharSequence, Boolean>() {
                     @Override
@@ -147,26 +147,27 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onNext(Boolean aBoolean) {
-                Log.d("passwordObserver",String.valueOf(aBoolean.booleanValue()));
+                Log.d("passwordObserver", String.valueOf(aBoolean.booleanValue()));
                 showPasswordMinimalAlert(aBoolean.booleanValue());
             }
 
             @Override
             public void onError(Throwable e) {
-                Log.d("rx",e.getMessage());
+                Log.d("rx", e.getMessage());
             }
 
             @Override
             public void onComplete() {
-                Log.d("rx","Password stream completed");
+                Log.d("rx", "Password stream completed");
             }
         };
         passwordStream.subscribe(passwordConsumer);
     }
-    private void rxConfirmPassword(){
+
+    private void rxConfirmPassword() {
         Observable<Boolean> confirmPasswordStream = Observable.merge(
                 (ObservableSource<? extends Boolean>) RxTextView.textChanges(edtPassword)
-                        .map(new Function<CharSequence,Boolean>() {
+                        .map(new Function<CharSequence, Boolean>() {
                             @Override
                             public Boolean apply(CharSequence charSequence) throws Exception {
                                 return !charSequence.toString().trim().equalsIgnoreCase(edtConfirmPass.getText().toString());
@@ -188,13 +189,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onNext(Boolean aBoolean) {
-                Log.d("passwordConfirmation",String.valueOf(aBoolean.booleanValue()));
+                Log.d("passwordConfirmation", String.valueOf(aBoolean.booleanValue()));
                 showPasswordConfirmationAlert(aBoolean.booleanValue());
             }
 
             @Override
             public void onError(Throwable e) {
-                Log.d("rx",e.getMessage());
+                Log.d("rx", e.getMessage());
             }
 
             @Override
@@ -204,58 +205,44 @@ public class MainActivity extends AppCompatActivity {
         };
         confirmPasswordStream.subscribe(confirmPasswordObserver);
     }
-    private void rxEmail(){
-        Observable<Boolean> emailStream = RxTextView.textChanges(edtEmail)
-                .map(new Function<CharSequence, String>() {
-                    @Override
-                    public String apply(CharSequence charSequence) throws Exception {
-                        return charSequence.toString();
-                    }
-                })
-                .filter(new Predicate<String>() {
-                    @Override
-                    public boolean test(String s) throws Exception {
-                        return s.length()>6;
-                    }
-                })
-                .debounce(100,TimeUnit.MILLISECONDS)
-                .flatMap(new Function<String, Boolean>() {
-                    @Override
-                    public Boolean apply(String s) throws Exception {
-                        return checkIfEmailExistFromAPI(s);
-                    }
-                });
 
-        Observer<Boolean> emailObserver = new Observer<Boolean>() {
+    private void rxEmail() {
+        RxTextView.textChanges(edtEmail)
+                .debounce(100, TimeUnit.MILLISECONDS)
+                .map(new Function<CharSequence, Boolean>() {
+                    @Override
+                    public Boolean apply(CharSequence charSequence) throws Exception {
+                        return checkIfEmailExistFromAPI(charSequence.toString()) && charSequence.length() > 6;
+                    }
+                }).subscribe(new Observer<Boolean>() {
             @Override
             public void onSubscribe(Disposable d) {
 
             }
 
             @Override
-            public void onNext(Boolean emailExist) {
-                Log.d("emailObserver",String.valueOf(emailExist.booleanValue()));
-                showEmailExistAlert(emailExist.booleanValue());
+            public void onNext(Boolean aBoolean) {
+                showEmailExistAlert(aBoolean);
             }
 
             @Override
             public void onError(Throwable e) {
-                Log.d("rx",e.getMessage());
+
             }
 
             @Override
             public void onComplete() {
-                Log.d("rx","Email stream completed");
-            }
-        };
-        emailStream.subscribe(emailObserver);
 
+            }
+        });
     }
-    public boolean checkIfEmailExistFromAPI(final String input){
+
+    public boolean checkIfEmailExistFromAPI(final String input) {
         return listEmail.contains(input);
     }
-    public void showPasswordMinimalAlert(boolean value){
-        if(value) {
+
+    public void showPasswordMinimalAlert(boolean value) {
+        if (value) {
             alertPassword.setText("Password harus memiliki 3 huruf dan 3 angka");
             alertPassword.setVisibility(View.VISIBLE);
 //            btnRegister.setEnabled(false);
@@ -265,16 +252,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void showPasswordConfirmationAlert(boolean value){
-        if(value){
+    public void showPasswordConfirmationAlert(boolean value) {
+        if (value) {
             alertConfirmPass.setText("Password yang di inputkan tidak sesuai");
             alertConfirmPass.setVisibility(View.VISIBLE);
         } else {
             alertConfirmPass.setVisibility(View.GONE);
         }
     }
-    public void showEmailExistAlert(boolean value){
-        if(value) {
+
+    public void showEmailExistAlert(boolean value) {
+        if (value) {
             textEmailAlert.setText(getString(R.string.email_exist_alert));
             textEmailAlert.setVisibility(View.VISIBLE);
         } else {
@@ -282,8 +270,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void test(View view)
-    {
+    public void test(View view) {
         Intent intent = new Intent(MainActivity.this, TestActivity.class);
         startActivity(intent);
     }
