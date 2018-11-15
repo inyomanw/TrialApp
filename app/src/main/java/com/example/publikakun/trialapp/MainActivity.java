@@ -102,10 +102,8 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onNext(ResponsePengguna responsePengguna) {
-                        Log.d(TAG, "logv onNext: " + String.valueOf(responsePengguna.getPengguna().getData().size()));
                         for (int i = 0; i < responsePengguna.getPengguna().getData().size(); i++) {
                             listEmail.add(responsePengguna.getPengguna().getData().get(i).getEmail().toString());
-                            Log.d(TAG, "logv for onNext: " + responsePengguna.getPengguna().getData().get(i).getEmail());
                         }
                         Log.d(TAG, "LOGV onNext: " + listEmail.toString());
                     }
@@ -222,7 +220,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onNext(Boolean aBoolean) {
-                showEmailExistAlert(aBoolean);
+                Toast.makeText(MainActivity.this,"Email Exist",Toast.LENGTH_SHORT).show();
+//                showEmailExistAlert(aBoolean);
+
             }
 
             @Override

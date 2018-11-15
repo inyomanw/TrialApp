@@ -32,7 +32,7 @@ import io.reactivex.functions.Function3;
 import io.reactivex.schedulers.Schedulers;
 
 public class RegistrationActivity extends AppCompatActivity {
-
+    private final static String TAG = RegistrationActivity.class.getSimpleName()+" logv";
     EditText etEmail, etPassword, etConfirmationPassword;
     TextInputLayout fieldEmail, fieldPassword, fieldConfirmationPassword;
     Button btnRegister;
@@ -74,7 +74,8 @@ public class RegistrationActivity extends AppCompatActivity {
                         for (Pengguna pengguna : responsePengguna.getPengguna().getData()) {
                             listEmail.add(pengguna.getEmail());
                         }
-                        Toast.makeText(RegistrationActivity.this, "success get all email", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(RegistrationActivity.this, "success get all email", Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "onNext: "+listEmail.toString());
                     }
 
                     @Override
@@ -108,7 +109,6 @@ public class RegistrationActivity extends AppCompatActivity {
                     public void onNext(Boolean aBoolean) {
                         fieldEmail.setErrorEnabled(aBoolean);
                         if(aBoolean){
-                            Toast.makeText(RegistrationActivity.this, "ayo metu", Toast.LENGTH_SHORT).show();
                             fieldEmail.setError("email already exist");
                         }else{
                             fieldEmail.setError(null);
